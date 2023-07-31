@@ -12,14 +12,13 @@ logger = logging.getLogger(__file__)
 def main():
     load_dotenv()
     
-    api_devman = os.environ.get('API_DEVMAN')
-    api_telegram_bot = os.environ.get('API_TELEGRAM_BOT')
-    chat_id = os.environ.get('CHAT_ID')
-    bot = telegram.Bot(token=api_telegram_bot)
+    devman_token = os.environ.get('DEVMAN_TOKEN')
+    tg_token_bot = os.environ.get('TG_TOKEN_BOT')
+    tg_chat_id = os.environ.get('TG_CHAT_ID')
+    bot = telegram.Bot(token=tg_token_bot)
     url = 'https://dvmn.org/api/long_polling/'
-    time_sleep = 300
 
-    headers = {'Authorization': f'Token {api_devman}'}
+    headers = {'Authorization': f'Token {devman_token}'}
     last_time = ''
 
     while True:
@@ -35,24 +34,20 @@ def main():
                 else:
                     status = 'Работа проверена. Ошибок нет'
                 lesson_title = answer['lesson_title']
-                lesson_url = answer['lesson_url']
-                
-            last_time = review.get('timestamp_to_request', last_time)
-            last_time = review.get('last_attempt_timestamp', last_time)
+                lesson_url = answer['lesson_url']             
             
-            bot.send_message(chat_id=chat_id,
-                             text=(f'У вас проверили работу "{lesson_title}"\n\n'
-                                   f'{status}\n{lesson_url}')
-                             )
+                last_time = review.get('last_attempt_timestamp', last_time)
+                
+                bot.send_message(chat_id=tg_chat_id,
+                                text=(f'У вас проверили работу "{lesson_title}"\n\n'
+                                    f'{status}\n{lesson_url}'))
+            else:
+                last_time = review.get('timestamp_to_request', last_time)
                     
         except requests.exceptions.ReadTimeout:        
-            logger.error('Timeout occurred!')
-            time.sleep(time_sleep)
-            logger.info('Trying to reconnect...')
+            continue
         except requests.exceptions.ConnectionError:        
-            logger.error('Connection Error!')
-            time.sleep(time_sleep)
-            logger.info('Trying to reconnect...')
+            continue
 
 
 if __name__ == '__main__':
