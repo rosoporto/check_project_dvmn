@@ -15,9 +15,9 @@ git clone git@github.com:rosoporto/dvmChatBot.git
 ```
 Далее, в корневой папке проекта необходимо создать файл `.env` и записать в него настройки в виде:
 ```python
-API_TELEGRAM_BOT= токен Вашего бота в телеграм
-API_DEVMAN= Ваш токен dvmn
-CHAT_ID= Ваш id телеграмм
+TG_TOKEN_BOT= токен Вашего бота в телеграм
+TG_TOKEN_BOT= Ваш токен dvmn
+TG_CHAT_ID= Ваш id телеграмм
 ```
 Затем используйте `pip` для установки зависимостей. Рекомендуется использовать отдельное виртуальное окружение.  
 [Инструкция по установке виртуального окружения](https://dvmn.org/encyclopedia/pip/pip_virtualenv/)
