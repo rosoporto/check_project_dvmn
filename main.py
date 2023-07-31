@@ -7,10 +7,7 @@ from dotenv import load_dotenv
 
 
 logger = logging.getLogger(__file__)
-logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s',
-        level=logging.INFO
-    )
+
 
 def main():
     load_dotenv()
@@ -59,4 +56,8 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s',
+        level=logging.INFO
+    )
     main()
