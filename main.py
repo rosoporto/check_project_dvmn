@@ -12,6 +12,11 @@ logger = logging.getLogger(__file__)
 def main():
     load_dotenv()
     
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s',
+        level=logging.INFO
+    )
+    
     devman_token = os.environ.get('DEVMAN_TOKEN')
     tg_token_bot = os.environ.get('TG_TOKEN_BOT')
     tg_chat_id = os.environ.get('TG_CHAT_ID')
@@ -47,12 +52,8 @@ def main():
         except requests.exceptions.ReadTimeout:        
             continue
         except requests.exceptions.ConnectionError:        
-            continue
+            time.sleep(600)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s',
-        level=logging.INFO
-    )
     main()
