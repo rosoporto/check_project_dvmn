@@ -13,7 +13,7 @@ def main():
     load_dotenv()
     
     logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s',
+        format='%(levelname)s:%(name)s:%(message)s',
         level=logging.INFO
     )
     
@@ -25,7 +25,8 @@ def main():
 
     headers = {'Authorization': f'Token {devman_token}'}
     last_time = ''
-
+    
+    logging.info('Bot started')
     while True:
         try:
             params = {'timestamp': last_time}
@@ -49,9 +50,11 @@ def main():
             else:
                 last_time = review.get('timestamp_to_request', last_time)
                     
-        except requests.exceptions.ReadTimeout:        
+        except requests.exceptions.ReadTimeout:
+            logging.error('Time Out')
             continue
-        except requests.exceptions.ConnectionError:        
+        except requests.exceptions.ConnectionError:
+            logging.error('Lost connection')
             time.sleep(600)
 
 
