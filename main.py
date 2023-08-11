@@ -42,6 +42,12 @@ def main():
     last_time = ''
     
     logger.info('Bot started')
+    
+    try:
+        1/0
+    except Exception:
+        logger.exception()
+        
     while True:
         try:
             params = {'timestamp': last_time}
