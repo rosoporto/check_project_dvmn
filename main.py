@@ -9,24 +9,39 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__file__)
 
 
+class TgLogsHandler(logging.Handler):
+
+    def __init__(self, token, chat_id):
+        super().__init__()
+        self.bot = telegram.Bot(token=token)
+        self.admin_chat_id = chat_id
+
+    def emit(self, record):
+        self.bot.send_message(
+                         chat_id=self.admin_chat_id,
+                         text=self.format(record)
+		)
+
+
 def main():
     load_dotenv()
+    
+    devman_token = os.environ.get('DEVMAN_TOKEN')
+    tg_token_bot = os.environ.get('TG_TOKEN_BOT')
+    tg_chat_id = os.environ.get('TG_CHAT_ID')    
+    url = 'https://dvmn.org/api/long_polling/'
     
     logging.basicConfig(
         format='%(levelname)s:%(name)s:%(message)s',
         level=logging.INFO
-    )
-    
-    devman_token = os.environ.get('DEVMAN_TOKEN')
-    tg_token_bot = os.environ.get('TG_TOKEN_BOT')
-    tg_chat_id = os.environ.get('TG_CHAT_ID')
-    bot = telegram.Bot(token=tg_token_bot)
-    url = 'https://dvmn.org/api/long_polling/'
+    )    
+    tg_handler = TgLogsHandler(tg_token_bot, tg_chat_id)
+    logger.addHandler(tg_handler)
 
     headers = {'Authorization': f'Token {devman_token}'}
     last_time = ''
     
-    logging.info('Bot started')
+    logger.info('Bot started')
     while True:
         try:
             params = {'timestamp': last_time}
@@ -44,17 +59,17 @@ def main():
             
                 last_time = review.get('last_attempt_timestamp', last_time)
                 
-                bot.send_message(chat_id=tg_chat_id,
+                tg_handler.bot.send_message(chat_id=tg_chat_id,
                                 text=(f'У вас проверили работу "{lesson_title}"\n\n'
                                     f'{status}\n{lesson_url}'))
             else:
                 last_time = review.get('timestamp_to_request', last_time)
                     
         except requests.exceptions.ReadTimeout:
-            logging.error('Time Out')
+            logger.error('Time Out')
             continue
         except requests.exceptions.ConnectionError:
-            logging.error('Lost connection')
+            logger.error('Lost connection')
             time.sleep(600)
 
 
